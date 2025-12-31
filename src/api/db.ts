@@ -1,6 +1,21 @@
-import { drizzle, BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client";
+import { dirname, resolve } from "path";
+import { existsSync, mkdirSync } from "fs";
 
-const sqlite = new Database('./drizzle/db.sqlite');
+// Use environment variable for database path, or resolve relative to project root
+const dbPath = process.env.DATABASE_PATH
+  ? resolve(process.env.DATABASE_PATH)
+  : resolve(process.cwd(), "drizzle", "db.sqlite");
+const dbDir = dirname(dbPath);
 
-export const db: BetterSQLite3Database = drizzle(sqlite);
+// Ensure the directory exists before creating the client
+if (!existsSync(dbDir)) {
+  mkdirSync(dbDir, { recursive: true });
+}
+
+const client = createClient({
+  url: `file:${dbPath}`,
+});
+
+export const db = drizzle(client);

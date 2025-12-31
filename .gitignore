@@ -26,3 +26,11 @@ gitignore
 # System Files
 .DS_Store
 Thumbs.db
+
+# Other lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# sqlite file
+drizzle/db.sqlite

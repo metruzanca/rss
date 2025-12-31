@@ -4,6 +4,6 @@ export default {
   out: "./drizzle/migrations/",
   // driver: "better-sqlite",
   dbCredentials: {
-    url: './drizzle/db.sqlite',
+    url: "./drizzle/db.sqlite",
   },
 };
