@@ -1,11 +1,11 @@
 "use server";
-import { redirect } from "@solidjs/router";
-import { useSession } from "vinxi/http";
-import { eq, and } from "drizzle-orm";
 import { hash, verify } from "@node-rs/bcrypt";
-import { db } from "./db";
-import { Users } from "../../drizzle/schema";
+import { redirect } from "@solidjs/router";
+import { eq } from "drizzle-orm";
+import { useSession } from "vinxi/http";
 import { PATHS } from "~/lib/constants";
+import { Users } from "../../drizzle/schema";
+import { db } from "./db";
 
 function validateUsername(username: unknown) {
   if (typeof username !== "string" || username.length < 3) {
@@ -62,7 +62,7 @@ export async function loginOrRegister(formData: FormData) {
   const username = String(formData.get("username"));
   const password = String(formData.get("password"));
   const loginType = String(formData.get("loginType"));
-  let error = validateUsername(username) || validatePassword(password);
+  const error = validateUsername(username) || validatePassword(password);
   if (error) return new Error(error);
 
   try {
@@ -81,7 +81,9 @@ export async function loginOrRegister(formData: FormData) {
 
 export async function logout() {
   const session = await getSession();
-  await session.update((d) => (d.userId = undefined));
+  await session.update((d) => {
+    d.userId = undefined;
+  });
   throw redirect(PATHS.auth.login);
 }
 
@@ -143,7 +145,7 @@ export async function createSuperuser(formData: FormData) {
   const username = String(formData.get("username"));
   const password = String(formData.get("password"));
 
-  let error = validateUsername(username) || validatePassword(password);
+  const error = validateUsername(username) || validatePassword(password);
   if (error) return new Error(error);
 
   try {
